@@ -1,2 +1,4 @@
 # Project-Dionysus
-A web-app aimed towards gamers, to be their one-stop destination to search, shop, explore and keep track of deals on their favorite games across different stores.
+
+A comprehensive web-app designed exclusively for gamers, serving as their ultimate destination for all things gaming. Seamlessly search, shop, explore, and effortlessly stay updated on the latest deals for their favorite games across various stores, all in one place.
+
