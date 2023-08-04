@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 const decodeToken = async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
-  //console.log(`Token: ${token}`);
+  console.log(`Token: ${token}`);
   try {
     // * Decode Token Value using Firebase Admin Functions
     const decodeValue = await admin.auth().verifyIdToken(token);
@@ -69,7 +69,7 @@ router.post("/gsignup", decodeToken, async (req, res) => {
       // TODO Find Customer from DB
       let existUser = null;
       console.log("Reached Here");
-      //   existUser = await User.findById(req.decodedToken.uid);
+      existUser = await User.find({email: req.decodeToken.email});
       if (existUser == null) {
         let user = new User({
           _id: req.decodeToken.uid,
@@ -77,7 +77,7 @@ router.post("/gsignup", decodeToken, async (req, res) => {
           PhoneNumber: null,
           FName: req.body.FName,
           LName: req.body.LName,
-          AuthType: "email",
+          AuthType: "google",
           Wishlist: [],
           isAdmin: false,
         });

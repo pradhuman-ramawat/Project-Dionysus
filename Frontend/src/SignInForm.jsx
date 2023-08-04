@@ -9,7 +9,9 @@ import {
   Button,
   Heading,
 } from "@chakra-ui/react";
-import { Formik, Field } from "formik";
+import { FcGoogle } from "react-icons/fc"
+import { Formik, Field, useFormikContext } from "formik";
+import { useNavigate } from "react-router-dom";
 
 const SignInForm = ({
   setLoginEmail,
@@ -17,17 +19,19 @@ const SignInForm = ({
   signInWithEmail,
   signInWithGoogle,
 }) => {
+
   return (
-    <Flex bg="gray.100" align="center" justify="center" h="100vh">
+    <Flex bg="gray.800" align="center" justify="center" h="60vh">
       <Box bg="white" p={6} rounded="md" w={64}>
         <Formik
           initialValues={{
             email: "",
             password: "",
           }}
+
           onSubmit={(values) => {
-            setLoginEmail(values.email);
-            setLoginPassword(values.password);
+            // setLoginEmail(values.email);
+            // setLoginPassword(values.password);
 
             signInWithEmail()
               .then((result) => {
@@ -38,9 +42,16 @@ const SignInForm = ({
               });
             alert(JSON.stringify(values, null, 2));
           }}
+
+          // onChange={(values) => {
+          //   setLoginEmail(values.email);
+          //   console.log(values.email);
+          //   setLoginPassword(values.password);
+          //   console.log(values.password);
+          // }}
         >
-          {({ handleSubmit, errors, touched }) => (
-            <form onSubmit={handleSubmit}>
+          {({ values, handleSubmit, handleChange, errors, touched }) => (
+            <form onSubmit={handleSubmit} onChange={handleChange}>
               <VStack spacing={4} align="flex-start">
                 <Heading size="lg" alignSelf="center">
                   Login
@@ -53,6 +64,12 @@ const SignInForm = ({
                     name="email"
                     type="email"
                     variant="filled"
+                    value={values.email}
+                    onChange={(e) => {
+                      console.log(e.currentTarget.value)
+                      setLoginEmail(e.currentTarget.value)
+                      handleChange(e)
+                    }}
                   />
                 </FormControl>
                 <FormControl isInvalid={!!errors.password && touched.password}>
@@ -63,7 +80,11 @@ const SignInForm = ({
                     name="password"
                     type="password"
                     variant="filled"
-                    //onChange={(event) => setLoginEmail(event.target.value)}
+                    onChange={(e) => {
+                      console.log(e.currentTarget.value)
+                      setLoginPassword(e.currentTarget.value)
+                      handleChange(e)
+                    }}
                     validate={(value) => {
                       if (value.length < 6) {
                         return "Password should be over 6 characters.";
@@ -80,6 +101,7 @@ const SignInForm = ({
                   colorScheme="blue"
                   w="full"
                   onClick={signInWithGoogle}
+                  leftIcon={<FcGoogle />}
                 >
                   Sign-In with Google
                 </Button>

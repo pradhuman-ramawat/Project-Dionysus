@@ -23,7 +23,7 @@ mongoose.connection.on("connected", () => {
 const app = express();
 
 const corsOption = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "http:"],
   optionSuccessStatus: 200,
 };
 app.use((req, res, next) => {
@@ -40,6 +40,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use("/auth", require("./src/routes/auth"));
+app.use("/wish", require("./src/routes/wishlist"));
 
 // * Default Route
 app.get("/", (req, res) => {
