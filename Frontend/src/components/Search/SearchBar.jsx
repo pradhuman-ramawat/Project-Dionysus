@@ -15,6 +15,12 @@ const SearchBar = ({ searchGame, setQuery, gameSearch }) => {
           background="gray.800"
           borderColor="white"
           onChange={setQuery}
+          onKeyDown={(e) => {
+            if(e.key === 'Enter'){
+              console.log("Enter");
+              gameSearch();
+            }
+          }}
         />
         <Button margin="10px" colorScheme="gray" onClick={gameSearch}>
           Search

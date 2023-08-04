@@ -7,12 +7,17 @@ import {
   Button,
   Flex,
   Spacer,
+  Text,
+  Center,
+  Image,
 } from "@chakra-ui/react";
 import SearchBar from "./SearchBar";
 import GameCard from "./GameCard";
 import { useLoaderData, useNavigation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import NoGames from "../../../public/search.png"
+import Loading from "../../../public/loading.png"
 
 const RAWG_KEY = "fade1546e6ea406881fb640e92d69817";
 const API_URL = "https://api.rawg.io/api/games";
@@ -53,7 +58,7 @@ export const Search = () => {
         setSearchLoaded(true);
       })
       .catch((err) => {
-        console.log(error);
+        console.log(err);
         if (err.response.status === 502) {
           setErrStatus(true);
         }
@@ -81,28 +86,38 @@ export const Search = () => {
           />
         </Box>
         <Box>
-          {errStatus !== true ? (
-            <Grid templateColumns="repeat(3, 1fr)">
-              {results ? (
-                results.map((game) => (
-                  <GameCard
-                    key={game.name}
-                    title={game.name}
-                    rating={game.metacritic}
-                    genres={game.genres}
-                    imglnk={game.background_image}
-                    gameid={game.id}
-                    slug={game.slug}
-                    plat={game.parent_platforms}
-                  />
-                ))
-              ) : (
-                <p>No Games Found</p>
-              )}
-            </Grid>
-          ) : (
-            <p>Some Error Occured</p>
-          )}
+          {searchLoaded ? 
+            errStatus !== true ? (
+              <Grid templateColumns="repeat(3, 1fr)">
+                {results ? (
+                  results.map((game) => (
+                    <GameCard
+                      key={game.name}
+                      title={game.name}
+                      rating={game.metacritic}
+                      genres={game.genres}
+                      imglnk={game.background_image}
+                      gameid={game.id}
+                      slug={game.slug}
+                      plat={game.parent_platforms}
+                    />
+                  ))
+                ) : (
+                  <p>No Games Found</p>
+                )}
+              </Grid>
+            ) : (
+              <p>Some Error Occured</p>
+            )
+          : 
+          <Box height="80vh">
+            <Flex height="100%" width="100%" direction={"column"} justifyContent="center" alignItems="center">
+              {/* <Text color="white">SearchGame</Text> */}
+              <Image w="200px" src={NoGames}></Image>
+              <Text color="white">Type Something</Text>
+              </Flex>
+          </Box>
+          }
         </Box>
       </Grid>
     </>

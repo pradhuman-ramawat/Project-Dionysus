@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Center, Image, HStack, IconButton } from "@chakra-ui/react";
+import { Center, Image, HStack, IconButton, Text } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
-const Carousel = ({ ss }) => {
+const Carousel = ({ ss, isLoading }) => {
   const [currImage, setCurrImage] = useState(0);
+  // const [screenshot, setScreenshots] = useState([]);
 
-  useState(() => {
-    console.log(ss);
-  });
+  // useState(() => {
+  //   ss.map((screenshot) => {
+  //     return screenshot.image;
+  //   });
+  //   console.log(ss);
+  // }, []);
 
   // const images = [
   //   "https://media.rawg.io/media/screenshots/bb5/bb5411aecf12acfd49faba2b6ce813a3.jpg",
@@ -35,12 +39,16 @@ const Carousel = ({ ss }) => {
             currImage > 0 && setCurrImage(currImage - 1);
           }}
         />
-        <Image
-          src={ss[currImage]}
-          htmlWidth="750px"
-          htmlHeight="600px"
-          borderRadius="lg"
-        />
+        {ss[currImage] ? (
+          <Image
+            src={ss[currImage].image}
+            htmlWidth="750px"
+            htmlHeight="600px"
+            borderRadius="lg"
+          />
+        ) : (
+          <Text color="white"></Text>
+        )}
         <IconButton
           variant="solid"
           bgColor="gray.800"

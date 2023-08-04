@@ -5,15 +5,19 @@ import Info from "./Info";
 import Prices from "./Prices";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const Details = (props) => {
+  //let { gameid, slug } = useParams();
   // const {
   //   params: { gameid, slug },
   // } = match;
-  const gameid = props.gameid;
-  const slug = props.slug;
-
+  const params = useParams();
+  // const gameData = location.state.data;
+  const gameid = params.gameid;
+  const slug = params.slug;
+  console.log(slug);
+  
   const DET_URL = `https://api.rawg.io/api/games`;
   const DEAL_URL = `https://www.cheapshark.com/api/1.0`;
   const RAWG_KEY = "fade1546e6ea406881fb640e92d69817";
@@ -28,13 +32,34 @@ const Details = (props) => {
   const [errCode, setErrCode] = useState("");
 
   const token = localStorage.getItem("token");
-  let user = localStorage.getItem("Username");
-  let localWL = JSON.parse(localStorage.getItem("Wishlist"));
-
+  let email = localStorage.getItem("email");
+  let localWL = localStorage.getItem("wishlist") ? JSON.parse(localStorage.getItem("wishlist")) : [];
+  
   useEffect(() => {
+    console.log("OLA" + localStorage.getItem("wishlist"))
+    // axios({
+    //   url: `http://localhost:5000/wish/wishlist`,
+    //   headers: {
+    //     "X-Requested-With": "XMLHttpRequest",
+    //     "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    //   },
+    //   method: "GET",
+    // })
+    //   .then((response) => {
+    //     //console.log("RESP" + response.data.wishlist);
+    //     setWish(JSON.stringify(response.data.wishlist));
+    //     localStorage.setItem("wishlist", JSON.stringify(response.data.wishlist));
+
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     if (err.response.status === 403) {
+    //       setErrCode("403");
+    //     }
+    //   });
     setWish(
-      localStorage.getItem("Wishlist")
-        ? JSON.parse(localStorage.getItem("Wishlist"))
+      localStorage.getItem("wishlist")
+        ? JSON.parse(localStorage.getItem("wishlist"))
         : []
     );
   }, []);
@@ -59,7 +84,6 @@ const Details = (props) => {
         method: "GET",
       })
         .then((response) => {
-          console.log("Game Details" + JSON.stringify(response.data));
           setDetails(response.data);
           setIsLoading(false);
         })
@@ -138,18 +162,20 @@ const Details = (props) => {
 
   useEffect(() => {
     let gID = details.id;
+    console.log("LOCAL WL" + JSON.stringify(localWL));
     const gameExists = (ID) => {
       return localWL.some((el) => {
         return el.gameID === ID;
       });
     };
-    if (user !== null) {
+    if (email !== null) {
       let doesExist = gameExists(gID);
+      console.log(doesExist);
       if (doesExist === true) {
         setExists(true);
       }
     }
-  }, [localWL, details, user]);
+  }, [localWL, details, email]);
 
   const addToWish = () => {
     const WL = {
@@ -159,20 +185,19 @@ const Details = (props) => {
     };
     setWish(wish.push(WL));
     setExists(true);
-    localStorage.setItem("Wishlist", JSON.stringify(wish));
-    console.log("U2", wish);
-    console.log(tkn);
+    localStorage.setItem("wishlist", JSON.stringify(wish));
+    console.log("WISH", WL);
     axios({
-      url: `${process.env.REACT_APP_BACK_URL}/wishlist`,
+      url: `http://localhost:5000/wish/wishlist`,
       headers: {
         "X-Requested-With": "XMLHttpRequest",
-        Authorization: localStorage.getItem("token"),
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
       data: { WL },
       method: "PUT",
     })
       .then((response) => {
-        // console.log(response);
+        console.log(response);
       })
       .catch((err) => {
         console.log(err);
@@ -180,70 +205,83 @@ const Details = (props) => {
           setErrCode("403");
         }
       });
+  };
 
-    const removeWish = () => {
-      const WL = {
-        slug: details.slug,
-        gameID: details.id,
-        steamID: steamid,
-      };
-      // let bruharr = localWL.filter(obj=>obj.gameID!==details.id);
-      // setWish(bruharr);
-      localStorage.setItem("Wishlist", JSON.stringify(wish));
-      console.log("U2", wish);
-      console.log(tkn);
-      axios({
-        url: `${process.env.REACT_APP_BACK_URL}/wishlist`,
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          Authorization: localStorage.getItem("token"),
-        },
-        data: { WL },
-        method: "DELETE",
-      })
-        .then((response) => {
-          // console.log("RESP",response);
-          // console.log("NEW WL",response.data.wishlist);
-          localStorage.setItem(
-            "Wishlist",
-            JSON.stringify(response.data.wishlist)
-          );
-          setWish(JSON.parse(localStorage.getItem("Wishlist")));
-          setExists(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          if (err.response.status === 403) {
-            setErrCode("403");
-          }
-        });
+  const removeWish = () => {
+    const WL = {
+      slug: details.slug,
+      gameID: details.id,
+      steamID: steamid,
     };
+    // let bruharr = localWL.filter(obj=>obj.gameID!==details.id);
+    // setWish(bruharr);
+    localStorage.setItem("wishlist", JSON.stringify(wish));
+    console.log("WISH", WL);
+    //console.log(tkn);
+    axios({
+      url: `http://localhost:5000/wish/wishlist`,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+      data: { WL },
+      method: "DELETE",
+    })
+      .then((response) => {
+        // console.log("RESP",response);
+        // console.log("NEW WL",response.data.wishlist);
+        localStorage.setItem(
+          "wishlist",
+          JSON.stringify(response.data.wishlist)
+        );
+        setWish(response.data.wishlist);
+        setExists(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.status === 403) {
+          setErrCode("403");
+        }
+      });
   };
 
   return (
     <Box padding="20px">
-      <Text color="white">{details.name}</Text>
-      {/* <Grid templateRows="1fr 6fr 4fr" templateColumns="repeat(5, 1fr)" gap={4}>
+      <Grid templateRows="1fr 6fr 4fr" templateColumns="repeat(5, 1fr)" gap={4}>
         <GridItem colSpan={5} bg="gray.800">
           <Center>
-            <Text as="b" fontSize="3xl" color="white">
+            <Text as="b" fontSize="5xl" color="white">
               {details.name}
             </Text>
           </Center>
         </GridItem>
+        {/* <Text color="white">{JSON.stringify(ss)}</Text> */}
         <GridItem colSpan={3} bg="gray.800">
-          <Carousel ss={ss} />
+          <Carousel ss={ss} isLoading={isLoading} />
         </GridItem>
         <GridItem colSpan={2} bg="gray.800">
-          <Prices />
+          <Info
+            exists={exists}
+            addToWish={addToWish}
+            removeWish={removeWish}
+            isLoading={isLoading}
+            errCode={errCode}
+            details={details}
+            devArr={details.developers}
+          />
+          <br></br>
+          <Prices
+            isLoading={isLoading}
+            stores={stores}
+            year={new Date(details.released).getFullYear()}
+            deals={deals}
+          />
         </GridItem>
-        <GridItem colSpan={2} bg="gray.800">
-          <Info />
-        </GridItem>
-        <GridItem colSpan={3} bg="gray.800">
-          <Description />
-        </GridItem>
-      </Grid> */}
+        {/* <GridItem colSpan={2} bg="gray.800"></GridItem> */}
+        <GridItem colSpan={5} bg="gray.800">
+          <Description desc={details.description} isLoading={isLoading} />
+        </GridItem>{" "}
+      </Grid>
     </Box>
   );
 };

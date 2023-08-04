@@ -11,6 +11,7 @@ import {
   Button,
   Spacer,
   Tag,
+  AspectRatio,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -42,12 +43,14 @@ const GameCard = ({ title, rating, genres, imglnk, gameid, slug, plat }) => {
       width="auto"
     >
       <CardBody>
+      <AspectRatio ratio={16/9}>
         <Image
           src={imglnk}
           borderRadius="md"
           htmlHeight={400}
           htmlWidth={600}
         ></Image>
+      </AspectRatio>
         <VStack>
           <Text as="b" fontSize="s" color="white">
             {title}
@@ -56,13 +59,7 @@ const GameCard = ({ title, rating, genres, imglnk, gameid, slug, plat }) => {
           <HStack wrap="wrap">
             {genres.map((genre) => {
               return (
-                <Link
-                  href={"/genre/" + genre.slug}
-                  key={genre.id}
-                  color="white"
-                >
-                  {genre.name}
-                </Link>
+                <Link key={genre.id} to={`/genre/${genre.slug}/${genre.id}`} style={{color: "white"}}>{genre.name}</Link>
               );
             })}
           </HStack>
@@ -70,7 +67,7 @@ const GameCard = ({ title, rating, genres, imglnk, gameid, slug, plat }) => {
           <HStack>
             // TODO Display Rating
             {/* {rating && <Tag>{rating}</Tag>} */}
-            <Link to={`/details/${gameid}/${slug}`} state={paramData}>
+            <Link to={`/details/${gameid}/${slug}`} state={{ data: paramData }}>
               <Button
                 size="sm"
                 variant="outline"
