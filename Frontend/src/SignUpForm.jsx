@@ -10,8 +10,6 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { Formik, Field } from "formik";
-import { useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc"
 
 const SignUpForm = ({
   setRegisterEmail,
@@ -19,10 +17,8 @@ const SignUpForm = ({
   signUpWithEmail,
   signInWithGoogle,
 }) => {
-  let navigate = useNavigate();
-
   return (
-    <Flex bg="gray.800" align="center" justify="center" h="60vh">
+    <Flex bg="gray.100" align="center" justify="center" h="100vh">
       <Box bg="white" p={6} rounded="md" w={64}>
         <Formik
           initialValues={{
@@ -41,7 +37,7 @@ const SignUpForm = ({
               });
           }}
         >
-          {({ values, handleSubmit, handleChange, errors, touched }) => (
+          {({ handleSubmit, errors, touched }) => (
             <form onSubmit={handleSubmit}>
               <VStack spacing={4} align="flex-start">
                 <Heading size="lg" alignSelf="center">
@@ -55,11 +51,6 @@ const SignUpForm = ({
                     name="email"
                     type="email"
                     variant="filled"
-                    onChange={(e) => {
-                      console.log(e.currentTarget.value)
-                      setRegisterEmail(e.currentTarget.value)
-                      handleChange(e)
-                    }}
                   />
                 </FormControl>
                 <FormControl isInvalid={!!errors.password && touched.password}>
@@ -70,11 +61,6 @@ const SignUpForm = ({
                     name="password"
                     type="password"
                     variant="filled"
-                    onChange={(e) => {
-                      console.log(e.currentTarget.value)
-                      setRegisterPassword(e.currentTarget.value)
-                      handleChange(e)
-                    }}
                     validate={(value) => {
                       if (value.length < 6) {
                         return "Password should be over 6 characters.";
@@ -84,14 +70,13 @@ const SignUpForm = ({
                   <FormErrorMessage>{errors.password}</FormErrorMessage>
                 </FormControl>
                 <Button type="submit" colorScheme="green" w="full">
-                  Register
+                  Login
                 </Button>
                 <Button
                   variant="outline"
                   colorScheme="blue"
                   w="full"
                   onClick={signInWithGoogle}
-                  leftIcon={<FcGoogle />}
                 >
                   Sign-Up with Google
                 </Button>
